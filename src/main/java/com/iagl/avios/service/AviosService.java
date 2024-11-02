@@ -1,13 +1,15 @@
 package com.iagl.avios.service;
 
-import com.iagl.avios.enums.CabinCode;
 import com.iagl.avios.model.AviosResponse;
+import com.iagl.avios.enums.CabinCode;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,26 +31,19 @@ public class AviosService {
     Objects.requireNonNull(arrival, "Arrival Airport has not been set");
 
     final Integer initialBaseAvios = getBaseAvios(departure, arrival);
+    String cabinName = null;
+    Map<String, Integer> options = new HashMap<>(Collections.emptyMap());
+    Integer finalBaseAvios = initialBaseAvios;
 
-    return cabinCode
-        .map(cabin -> buildSingleCabinResponse(initialBaseAvios, cabin))
-        .orElseGet(() -> buildAllCabinsResponse(initialBaseAvios));
-  }
+    if (cabinCode.isEmpty()) {
+      Arrays.stream(CabinCode.values())
+          .forEach(cabin -> options.put(cabin.getName(), calculateBonus(initialBaseAvios, cabin)));
+    } else {
+      cabinName = cabinCode.get().getName();
+      finalBaseAvios = calculateBonus(finalBaseAvios, cabinCode.get());
+    }
 
-  private AviosResponse buildSingleCabinResponse(int baseAvios, CabinCode cabin) {
-    return AviosResponse.builder()
-        .aviosForCabin(calculateBonus(baseAvios, cabin))
-        .cabinClass(cabin.getName())
-        .build();
-  }
-
-  private AviosResponse buildAllCabinsResponse(int baseAvios) {
-    Map<String, Integer> options =
-        Arrays.stream(CabinCode.values())
-            .collect(
-                Collectors.toMap(CabinCode::getName, cabin -> calculateBonus(baseAvios, cabin)));
-
-    return AviosResponse.builder().aviosForCabin(baseAvios).availableOptions(options).build();
+    return new AviosResponse(departure, arrival, finalBaseAvios, cabinName, options);
   }
 
   private Integer getBaseAvios(String departure, String arrival) {
