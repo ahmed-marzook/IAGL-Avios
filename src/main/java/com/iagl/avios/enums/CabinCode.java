@@ -4,10 +4,10 @@ import lombok.Getter;
 
 @Getter
 public enum CabinCode {
-  M("World Traveller", 0),
-  W("World Traveller Plus", 20),
-  J("Club World", 50),
-  F("First", 100);
+  M("worldTraveller", 0),
+  W("worldTravellerPlus", 20),
+  J("clubWorld", 50),
+  F("first", 100);
 
   private final String name;
   private final int bonus;
