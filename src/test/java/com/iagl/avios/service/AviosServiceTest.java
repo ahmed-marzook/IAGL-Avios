@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.iagl.avios.enums.CabinCode;
 import com.iagl.avios.model.AviosResponse;
-import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,7 +50,7 @@ public class AviosServiceTest {
   @MethodSource("routeBaseAvios")
   void calculateAvios_ShouldReturnCorrectBaseAvios(
       String departure, String arrival, int expectedAvios) {
-    AviosResponse response = service.calculateAvios(departure, arrival, Optional.empty());
+    AviosResponse response = service.calculateAvios(departure, arrival, null);
 
     assertThat(response)
         .isNotNull()
@@ -66,7 +65,7 @@ public class AviosServiceTest {
   @MethodSource("cabinBonusProvider")
   void calculateAvios_WithCabinBonus_ShouldApplyCorrectBonus(
       String departure, String arrival, CabinCode cabinCode, int expectedAvios) {
-    AviosResponse response = service.calculateAvios(departure, arrival, Optional.of(cabinCode));
+    AviosResponse response = service.calculateAvios(departure, arrival, cabinCode);
 
     assertThat(response)
         .isNotNull()
@@ -79,7 +78,7 @@ public class AviosServiceTest {
 
   @Test
   void shouldReturnAllCabinOptionsWhenNoCabinSpecified() {
-    AviosResponse response = service.calculateAvios("LHR", "LAX", Optional.empty());
+    AviosResponse response = service.calculateAvios("LHR", "LAX", null);
 
     assertThat(response)
         .isNotNull()
@@ -92,14 +91,14 @@ public class AviosServiceTest {
 
   @Test
   void calculateAvios_WithDepartureIsNull_ShouldThrowNull() {
-    assertThatThrownBy(() -> service.calculateAvios(null, "LAX", Optional.empty()))
+    assertThatThrownBy(() -> service.calculateAvios(null, "LAX", null))
         .isInstanceOf(NullPointerException.class)
         .hasMessage("Departure Airport has not been set");
   }
 
   @Test
   void calculateAvios_WithArrivalIsNull_ShouldThrowNull() {
-    assertThatThrownBy(() -> service.calculateAvios("LHR", null, Optional.empty()))
+    assertThatThrownBy(() -> service.calculateAvios("LHR", null, null))
         .isInstanceOf(NullPointerException.class)
         .hasMessage("Arrival Airport has not been set");
   }

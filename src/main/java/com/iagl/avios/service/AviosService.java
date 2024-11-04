@@ -24,16 +24,23 @@ public class AviosService {
     routeRewards.put(new AirportRoute("LGW", "YYZ"), 3250);
   }
 
-  public AviosResponse calculateAvios(
-      String departure, String arrival, Optional<CabinCode> cabinCode) {
+  /**
+   * @param departure - Departure Airport Code
+   * @param arrival - Arrival Airport Code
+   * @param cabinCode - Cabin Code to calculate bonus
+   * @return Calculates Avios for flight route
+   */
+  public AviosResponse calculateAvios(String departure, String arrival, CabinCode cabinCode) {
     Objects.requireNonNull(departure, "Departure Airport has not been set");
     Objects.requireNonNull(arrival, "Arrival Airport has not been set");
 
     final Integer initialBaseAvios = getBaseAvios(departure, arrival);
 
-    return cabinCode
-        .map(cabin -> buildSingleCabinResponse(departure, arrival, initialBaseAvios, cabin))
-        .orElseGet(() -> buildAllCabinsResponse(departure, arrival, initialBaseAvios));
+    if (cabinCode != null) {
+      return buildSingleCabinResponse(departure, arrival, initialBaseAvios, cabinCode);
+    } else {
+      return buildAllCabinsResponse(departure, arrival, initialBaseAvios);
+    }
   }
 
   private AviosResponse buildSingleCabinResponse(

@@ -13,7 +13,6 @@ import com.iagl.avios.enums.CabinCode;
 import com.iagl.avios.model.AviosRequest;
 import com.iagl.avios.model.AviosResponse;
 import com.iagl.avios.service.AviosService;
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -35,7 +34,7 @@ public class AviosControllerTest {
 
   @Test
   void calculateAvios_ValidRequest_ReturnsSuccessResponse() throws Exception {
-    AviosRequest validRequest = new AviosRequest("LHR", "JFK", Optional.of(CabinCode.M));
+    AviosRequest validRequest = new AviosRequest("LHR", "JFK", CabinCode.M);
 
     when(service.calculateAvios(anyString(), anyString(), any())).thenReturn(mockAviosResponse);
 
@@ -54,7 +53,7 @@ public class AviosControllerTest {
 
   @Test
   void calculateAvios_InvalidRequest_ReturnsGenericBadRequest() throws Exception {
-    AviosRequest validRequest = new AviosRequest("LHR", "JFK", Optional.of(CabinCode.M));
+    AviosRequest validRequest = new AviosRequest("LHR", "JFK", CabinCode.M);
 
     when(service.calculateAvios(anyString(), anyString(), any()))
         .thenThrow(new RuntimeException("Service error"));
@@ -75,7 +74,7 @@ public class AviosControllerTest {
 
   @Test
   void whenMethodArgumentNotValid_thenReturnsValidationErrorDeparture() throws Exception {
-    AviosRequest invalidRequest = new AviosRequest("", "GHF", Optional.empty());
+    AviosRequest invalidRequest = new AviosRequest("", "GHF", null);
 
     mockMvc
         .perform(
@@ -96,7 +95,7 @@ public class AviosControllerTest {
 
   @Test
   void whenMethodArgumentNotValid_thenReturnsValidationErrorArrival() throws Exception {
-    AviosRequest invalidRequest = new AviosRequest("GHF", "", Optional.empty());
+    AviosRequest invalidRequest = new AviosRequest("GHF", "", null);
 
     mockMvc
         .perform(
